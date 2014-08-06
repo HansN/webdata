@@ -1,6 +1,23 @@
 -module(webdata).
 
--include("webdate.hrl").
+-export([get_title/1,
+	 get_modifications/1,
+	 get_page_curr_user/1
+	]).
+
+-include_lib("webdata/include/webdata.hrl").
+
+get_title(PageId) ->
+    case webdata_db:get_page(PageId) of
+	[P=#page{}] -> P#page.title;
+	_ -> not_found
+    end.
+	    
+get_modifications(PageId) ->
+    case webdata_db:get_page(PageId) of
+	[P=#page{}] -> hd(P#page.changed);
+	_ -> []
+    end.
 
 %% -> not_found | not_authorized | no_user | #page{}
 

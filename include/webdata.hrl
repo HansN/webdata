@@ -4,36 +4,30 @@
 	  role,		   % required role for viewing user
 	  show_between = {undefined,undefined},	 % {FirstDate, LastDate}
 	  title = "",
-	  created_by,	   % user id
-	  created,	   % DateTime
-	  last_changed_by, % user id
-	  last_changed,	   % DateTime
+	  changed = [],     % [ {user_id,DateTime} ]  (youngest first, creation last)
 	  sub_pages = [],  % {PageId, TitleString}
 	  contents = []    % #section{}
-	  }).
+	 }).
 
--record(#section, {
-	   role,		   % required role for viewing user
-	   show_between = {undefined,undefined},	 % {FirstDate, LastDate}
-	   created_by,	   % user id
-	   created,	   % DateTime
-	   last_changed_by, % user id
-	   last_changed,	   % DateTime
-	   contents = ""
-	  }).
+-record(section, {
+	  role,		   % required role for viewing user
+	  show_between = {undefined,undefined},	 % {FirstDate, LastDate}
+	  changed = [],     % [ {user_id,DateTime} ]  (youngest first, creation last)
+	  contents = ""
+	 }).
 
 -record(user, {
 	  id,					% key
 	  given_name = "",
 	  family_name = "",
-	  post_address = ""
+	  post_address = "",
 	  phone_numbers = [],
 	  email_addresses = [],
 	  roles = [{hksf,medlem}],
-	  fastighet				% id
+	  property				% property id
 	 }).
 
--record(fastighet, {
-	  id,					% 'Säby 2:x'
+-record(property, {
+	  id,
 	  address = ""
 	 }).

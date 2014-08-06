@@ -1,5 +1,7 @@
 -module(webdata_db).
 
+-export([get_page/1]).
+
 -include("webdata.hrl").
 
 get_page(PageId) -> 

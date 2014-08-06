@@ -1,5 +1,8 @@
 -module(webdata_lib).
 
+-export([date_in_range/1,
+	 curr_user_has_role/1
+	]).
 
 date_in_range({undefined,undefined}) -> true;
 date_in_range({undefined,To}) -> date() =< To;
