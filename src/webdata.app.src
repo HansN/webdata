@@ -1,0 +1,14 @@
+{application, webdata,
+ [
+  {description, "An Erlang webdata library"},
+  {vsn, "1"},
+  {modules, [
+             webdata
+            ]},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {env, []}
+ ]}.
