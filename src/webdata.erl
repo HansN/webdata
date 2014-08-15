@@ -2,6 +2,7 @@
 
 -export([get_title/1,
 	 get_changes/1,
+	 page_exists_curr_user/1,
 	 get_page_curr_user/1,
 
 	 fmt_title/1,
@@ -17,9 +18,8 @@
 fmt_title(PageId) ->
     get_title(PageId).
 
-fmt_last_changed(PageId) ->
-    [{Uid,DateTime}|_] = get_changes(PageId),
-    io_lib:format("Senast ändrad ~p av ~p", [fmt_date_time(DateTime),fmt_user(Uid)]).
+fmt_last_changed([{Uid,DateTime}|_]) ->
+    io_lib:format("Senast ändrad ~s av ~s", [fmt_date_time(DateTime),fmt_user(Uid)]).
 
 fmt_date_time({Date,Time}) -> [fmt_date(Date)," ",fmt_time(Time)].
 
@@ -33,6 +33,12 @@ fmt_user(Uid) -> io_lib:format('~p',[Uid]). % FIXME
 get_title(PageId) -> (hd(webdata_db:get_page(PageId)))#page.title.
 	    
 get_changes(PageId) -> (hd(webdata_db:get_page(PageId)))#page.changed.
+
+page_exists_curr_user(PageId) ->
+    case webdata_db:get_page(PageId) of
+        [P] -> may_show(P);
+        _ -> false
+    end.
 
 %% -> not_found | not_authorized | no_user | #page{}
 
@@ -59,7 +65,7 @@ filter_page_contents(P) ->
 %% -> not_found | not_authorized | no_user | true
 		    
 may_show(P=#page{}) -> may_show(P#page.show_between, P#page.role);
-may_show(S=#section{}) -> may_show(S#section.show_between, S#section.role);
+may_show(S=#page_section{}) -> may_show(S#page_section.show_between, S#page_section.role);
 may_show([]) -> not_found.
 
 may_show(DateRange, Role) ->

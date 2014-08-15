@@ -9,7 +9,7 @@
 	  contents = []    % #section{}
 	 }).
 
--record(section, {
+-record(page_section, {
 	  role,		   % required role for viewing user
 	  show_between = {undefined,undefined},	 % {FirstDate, LastDate}
 	  changed = [],     % [ {user_id,DateTime} ]  (youngest first, creation last)
