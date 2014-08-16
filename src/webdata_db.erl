@@ -12,7 +12,13 @@ get_page(PageId) ->
 	_ -> not_found
     end.
 	    
-
+get_user(UserId) ->
+    case ?DB:read(user, userId) of
+	[U] -> U;
+	_ -> not_found
+    end.
+	    
+    
 
 
 
