@@ -53,6 +53,21 @@ get_page_curr_user(PageId) ->
 	    not_found
     end.
 			    
+get_user(UserId) ->
+    webdata_db:get_user(UserId).
+
+get_user_login(UserId) ->
+    case get_user(UserId) of
+	U=#user{} ->
+	    wf:user(UserId),
+	    wf:clear_roles(),
+	    [wf:role(Role,true) || Role <- U#user.roles],
+	    U;
+	R ->
+	    R
+    end.
+	    
+
 filter_page_contents(P) ->
     P#page{sub_pages = [{SP,Psp#page.title} 
 			|| SP <- P#page.sub_pages,
@@ -73,3 +88,4 @@ may_show(DateRange, Role) ->
 	true -> webdata_lib:curr_user_has_role(Role);
 	false -> false
     end.
+
