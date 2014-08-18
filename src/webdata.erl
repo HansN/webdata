@@ -5,6 +5,10 @@
 	 page_exists_curr_user/1,
 	 get_page_curr_user/1,
 
+	 get_user/1,
+	 get_user_login/2,
+	 logout/0,
+
 	 fmt_title/1,
 	 fmt_last_changed/1,
 	 fmt_date_time/1,
@@ -27,24 +31,30 @@ fmt_date({YYYY,M,D}) -> io_lib:format("~w-~.2.0w-~.2.0w",[YYYY,M,D]).
     
 fmt_time({H,M,_S}) -> io_lib:format("~.2.0w:~.2.0w",[H,M]).
 
-fmt_user(Uid) -> io_lib:format('~p',[Uid]). % FIXME
+fmt_user(#user{given_name=G, family_name=F}) -> [G," ",F];
+fmt_user(undefined) -> "??";
+fmt_user(not_found) -> "???";
+fmt_user(Uid) -> fmt_user(webdata:get_user(Uid)).
 
 
-get_title(PageId) -> (hd(webdata_db:get_page(PageId)))#page.title.
+get_title(PageId) -> (webdata_db:get_page(PageId))#page.title.
 	    
-get_changes(PageId) -> (hd(webdata_db:get_page(PageId)))#page.changed.
+get_changes(PageId) -> (webdata_db:get_page(PageId))#page.changed.
 
 page_exists_curr_user(PageId) ->
     case webdata_db:get_page(PageId) of
-        [P] -> may_show(P);
-        _ -> false
+        P=#page{} -> case may_show(P) of
+			 true -> true;
+			 false -> not_authorized
+		     end;
+        _ -> not_found
     end.
 
 %% -> not_found | not_authorized | no_user | #page{}
 
 get_page_curr_user(PageId) ->
     case webdata_db:get_page(PageId) of
-	[P] ->
+	P=#page{} ->
 	    case may_show(P) of
 		true  -> filter_page_contents(P);
 		Other -> Other
@@ -56,17 +66,20 @@ get_page_curr_user(PageId) ->
 get_user(UserId) ->
     webdata_db:get_user(UserId).
 
-get_user_login(UserId) ->
+get_user_login(UserId, Pwd) -> % FIXME: Injection possible!!
     case get_user(UserId) of
 	U=#user{} ->
-	    wf:user(UserId),
+	    wf:user(U),
 	    wf:clear_roles(),
 	    [wf:role(Role,true) || Role <- U#user.roles],
-	    U;
+	    ok;
 	R ->
 	    R
     end.
 	    
+logout() ->
+    wf:clear_roles(),
+    wf:clear_user().
 
 filter_page_contents(P) ->
     P#page{sub_pages = [{SP,Psp#page.title} 

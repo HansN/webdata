@@ -2,7 +2,9 @@
 
 -define(DB, filedb).
 
--export([get_page/1]).
+-export([get_page/1,
+	 get_user/1
+	]).
 
 -include("webdata.hrl").
 
@@ -13,7 +15,7 @@ get_page(PageId) ->
     end.
 	    
 get_user(UserId) ->
-    case ?DB:read(user, userId) of
+    case ?DB:read(user, UserId) of
 	[U] -> U;
 	_ -> not_found
     end.
